@@ -129,15 +129,71 @@ router.post('/login',(req,res,next)=>{
     })(req,res,next);
     
 });
-router.get('/:id/follow',(req,res)=>{
+router.get('/:id/followings',isLoggedIn, async (req,res,next)=>{
+    try{
+        const user = await db.User.findOne({
+            where : { id: parseInt(req.params.id,10)}
+        })
+        const followers = await user.getFollowings({
+            attributes : ['id','nickname']
+        })
+        res.json(followers);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+})
+router.get('/:id/followers',isLoggedIn,async (req,res,next)=>{
+    try{
+        const user = await db.User.findOne({
+            where : { id: parseInt(req.params.id,10)}
+        })
+        const followers = await user.getFollowers({
+            attributes : ['id','nickname']
+        })
+        res.json(followers);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+})
+router.delete('/:id/follower',isLoggedIn,async (req,res,next)=>{
+    try{
+        const me = await db.User.findOne({
+            where : {id : req.user.id},
+        })
+        await me.removeFollower(req.params.id);
+        res.send(req.params.id);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+})
+router.post('/:id/follow',isLoggedIn,async (req,res,next)=>{
+    try{
+        const me = await db.User.findOne({
+            where : { id : req.user.id},
+        });
+        await me.addFollowing(req.params.id);
+        res.send(req.params.id);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+})
+router.delete('/:id/follow',isLoggedIn,async (req,res,next)=>{
+    try{
+        const me = await db.User.findOne({
+            where : {id :req.user.id},
+        })
+        await me.removeFollowing(req.params.id);
+        res.send(req.params.id);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+})
 
-})
-router.post('/:id/follow',(req,res)=>{
-    
-})
-router.delete('/:id/follower',(req,res)=>{
-    
-})
 router.get('/:id/posts',async (req,res,next)=>{
     try{
         const posts = await db.Post.findAll({
@@ -150,6 +206,11 @@ router.get('/:id/posts',async (req,res,next)=>{
                 attribute : ['id','nickname'],
             },{
                 model :db.Image,
+            },{
+                model :db.User,
+                through : 'Like',
+                as : 'Likers',
+                attributes : ['id']
             }],
         });
         res.json(posts);
@@ -158,5 +219,17 @@ router.get('/:id/posts',async (req,res,next)=>{
         next(e);
     }
 })
-
+router.patch('/nickname',isLoggedIn,async(req,res,next)=>{
+    try{
+        await db.User.update({
+            nickname : req.body.nickname,
+        },{
+            where : {id : req.user.id}
+        })
+        res.send(req.body.nickname)
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+})
 module.exports = router;
