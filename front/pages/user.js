@@ -6,19 +6,10 @@ import PostCard from '../components/PostCard'
 import {LOAD_USER_POSTS_REQUEST} from '../reducers/post';
 import { LOAD_USER_REQUEST } from '../reducers/user';
 const User = ({id})=>{
-    const dispatch = useDispatch();
+    
     const {mainPosts} = useSelector(state=>state.post);
     const {userInfo} =useSelector(state=>state.user);
-    useEffect(()=>{
-        dispatch({
-            type : LOAD_USER_REQUEST,
-            data : id,
-        })
-        dispatch({
-            type : LOAD_USER_POSTS_REQUEST,
-            data : id,
-        })
-    },[])
+    
     return (
         <div>
             {userInfo? <Card actions={[
@@ -44,6 +35,15 @@ User.propTypes = {
 }
 
 User.getInitialProps =  async (context) => {//   라이프 사이클 next가 넣어준
+    const id = parseInt(context.query.id,10);
+    context.store.dispatch({
+        type : LOAD_USER_REQUEST,
+        data : id,
+    })
+    context.store.dispatch({
+        type : LOAD_USER_POSTS_REQUEST,
+        data : id,
+    })
     //가장 최초의 작업가능 
     //  서버의 데이터를 가져와서 
     //  서버사이드 렌더링 가능

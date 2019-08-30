@@ -115,7 +115,7 @@ function* watchLoadMainPosts(){
     yield takeLatest(LOAD_MAIN_POSTS_REQUEST,loadMainPosts);
 }
 function loadHashtagPostsAPI(tag){
-    return axios.get(`/hashtag/${tag}`)
+    return axios.get(`/hashtag/${encodeURIComponent(tag)}`)
 }
 function* loadHashtagPosts(action){
     try{
@@ -135,7 +135,7 @@ function* watchLoadHashtagPosts(){
     yield takeLatest(LOAD_HASHTAG_POSTS_REQUEST,loadHashtagPosts);
 }
 
-function loadUserPostsAPI(id){
+function loadUserPostsAPI(id = 0){
     return axios.get(`/user/${id}/posts`)
 }
 function* loadUserPosts(action){

@@ -8,12 +8,7 @@ import {LOAD_MAIN_POSTS_REQUEST} from '../reducers/post'
 const Home = ()=>{
     const {me} = useSelector(state=> state.user);
     const {mainPosts} = useSelector(state =>state.post);
-    const dispatch = useDispatch();
-    useEffect(()=>{
-        dispatch({
-            type:LOAD_MAIN_POSTS_REQUEST,
-        })
-    },[]);
+    
     return (
         <div>
             
@@ -26,5 +21,10 @@ const Home = ()=>{
         </div>
     );
 };
-
+Home.getInitialProps = async(context)=>{
+    
+    context.store.dispatch({
+        type:LOAD_MAIN_POSTS_REQUEST,
+    })
+}
 export default Home;

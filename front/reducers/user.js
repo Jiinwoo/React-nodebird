@@ -119,6 +119,7 @@ const reducer = (state = initialState,action)=>{
                 isSigningUp:true,
                 isSignedUp:false,
                 signUpErrorReason:'',
+                me : null
             }
         }
         case SIGN_UP_FAILURE:{
@@ -133,6 +134,7 @@ const reducer = (state = initialState,action)=>{
                 ...state,
                 isSigningUp:false,
                 isSignedUp:true,
+                me : null
             }
         }
         case LOAD_USER_REQUEST:{

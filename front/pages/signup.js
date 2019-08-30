@@ -29,6 +29,7 @@ const SignUp = ()=>{
     const [passwordError,setPasswordError] = useState(false);
     const [termError,setTermError] = useState(false);
     const dispatch = useDispatch();
+
     
     const [id,onChangeId] = useInput('');
 
@@ -72,7 +73,9 @@ const SignUp = ()=>{
         setTermError(false);
         setTerm(e.target.checked)
     },[term]);
-    
+    if(me){
+        return null;
+    }
     return (
         <>
         <TextInput value={'입력해주세요'}></TextInput>

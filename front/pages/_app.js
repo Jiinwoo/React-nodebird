@@ -5,6 +5,7 @@ import React from 'react';
 import Head from 'next/head';
 import propTypes from 'prop-types';
 import withRedux from 'next-redux-wrapper';
+import withReduxSage from 'next-redux-saga';
 import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
 import { createStore, applyMiddleware, compose } from 'redux';
@@ -12,7 +13,8 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import AppLayout from '../components/AppLayout';
 import reducer from '../reducers';
 import rootSaga from '../sagas/index';
-
+import {LOAD_USER_REQUEST} from '../reducers/user'
+import Axios from 'axios';
 
 const NodeBird = ({ Component, store,pageProps }) => {
     return (
@@ -43,6 +45,18 @@ NodeBird.getInitialProps = async (context)=>{// next에서 context 넣어줌
   if(context.Component.getInitialProps){
     pageProps = await context.Component.getInitialProps(ctx);
   }
+  const state = ctx.store.getState();
+  const cookie = ctx.isServer? ctx.req.headers.cookie : '';
+  if(ctx.isServer && cookie){
+    Axios.defaults.headers.Cookie = cookie;
+  }
+  //
+  if(!state.user.me){
+    ctx.store.dispatch({
+      type : LOAD_USER_REQUEST
+    })
+  }
+  
   return {pageProps};
 }
 const configureStore = (initialState, options) => {
@@ -54,7 +68,8 @@ const configureStore = (initialState, options) => {
     : compose(applyMiddleware(...middlewares),
     !options.isServer && window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefined' ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f , );
     const store = createStore(reducer, initialState, enhancer);
-    sagaMiddleware.run(rootSaga);
+    
+    store.sagaTask = sagaMiddleware.run(rootSaga);
     return store;
 };
-export default withRedux(configureStore)(NodeBird);
+export default withRedux(configureStore)(withReduxSage(NodeBird));

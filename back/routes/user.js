@@ -44,7 +44,7 @@ router.post('/',async (req,res,next)=>{//회원가입 /api/user/
             userId : req.body.userId,
             password : hashedPassword,
         });
-        console.log(newUser);
+        
 
         return res.status(200).json(newUser);// json 데이터를 보냄
     }catch(e){
@@ -88,7 +88,7 @@ router.get('/:id',async (req,res,next)=>{ //남의 정보 가져오는 것 ex) /
 });
 router.post('/logout',(req,res)=>{
     req.logout();
-    req.session.destory();
+    req.session.destroy();
     res.send('logout 성공');
 });
 router.post('/login',(req,res,next)=>{
@@ -132,7 +132,7 @@ router.post('/login',(req,res,next)=>{
 router.get('/:id/followings',isLoggedIn, async (req,res,next)=>{
     try{
         const user = await db.User.findOne({
-            where : { id: parseInt(req.params.id,10)}
+            where : { id: parseInt(req.params.id,10) || (req.user && req.user.id) || 0,}
         })
         const followers = await user.getFollowings({
             attributes : ['id','nickname']
@@ -146,7 +146,7 @@ router.get('/:id/followings',isLoggedIn, async (req,res,next)=>{
 router.get('/:id/followers',isLoggedIn,async (req,res,next)=>{
     try{
         const user = await db.User.findOne({
-            where : { id: parseInt(req.params.id,10)}
+            where : { id: parseInt(req.params.id,10) || (req.user && req.user.id) || 0,}
         })
         const followers = await user.getFollowers({
             attributes : ['id','nickname']
@@ -198,7 +198,7 @@ router.get('/:id/posts',async (req,res,next)=>{
     try{
         const posts = await db.Post.findAll({
             where : {
-                UserId : parseInt(req.params.id),
+                UserId : parseInt(req.params.id,10) || (req.user && req.user.id) || 0,
                 RetweetId : null,
             },
             include :[{
