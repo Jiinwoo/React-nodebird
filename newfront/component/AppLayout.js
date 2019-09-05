@@ -5,15 +5,19 @@ const { Header, Content, Footer } = Layout;
 const {Title} = Typography;
 
 const AppLayout = ({children})=>{
+    
     const [visible,setVisible] = useState(false)
     const [placement,setPlacement] = useState('left')
+    const [text123,setText123] = useState('');
     const showDrawer = useCallback(()=>{
         setVisible(true);
     },[visible])
     const onClose = useCallback(()=>{
         setVisible(false);
     })
-    
+    const onChangeText = useCallback((e)=>{
+        setText123(e.target.value);
+    },{text123});
     return (
         <Layout className="layout" >
             <Header >
@@ -33,7 +37,7 @@ const AppLayout = ({children})=>{
                 
                 <Menu.Item key="1">Jinwoo's Brunch</Menu.Item>
                 <Menu.Item key="2" style={{float:"right"}}>
-                    <Input placeholder="Search"/>
+                    <Input placeholder="Search" value={text123} onChange={onChangeText}/>
                     <Icon style={{paddingLeft:30}}type="search" />
                 </Menu.Item>
                 

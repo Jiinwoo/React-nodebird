@@ -9,7 +9,7 @@ import {LOAD_USER_POSTS_REQUEST} from '../reducers/post';
 import PostCard from '../components/PostCard'
 const Profile = ()=>{
     const dispatch = useDispatch();
-    const {me,followingList, followerList} = useSelector(state=>state.user);
+    const {me,followingList, followerList, hasMoreFollower, hasMoreFollowing} = useSelector(state=>state.user);
     const {mainPosts} = useSelector(state=>state.post); 
     
     
@@ -25,6 +25,18 @@ const Profile = ()=>{
             data :userId,
         });
     },[])
+    const loadMoreFollowings = useCallback(()=>{
+        dispatch({
+            type : LOAD_FOLLOWINGS_REQUEST,
+            offset : followingList.length
+        })
+    },[followingList.length])
+    const loadMoreFollowers = useCallback(()=>{
+        dispatch({
+            type : LOAD_FOLLOWERS_REQUEST,
+            offset : followerList.length
+        })
+    },[followerList.length])
     return (
         <div>
             <NicknameEditForm />
@@ -33,7 +45,7 @@ const Profile = ()=>{
                 grid={{gutter:4,xs:2,md:3}}
                 size="small"
                 header={<div>팔로잉 목록</div>}
-                loadMore={<Button style={{width:'100%'}}>더 보기</Button>}
+                loadMore={hasMoreFollowing && <Button style={{width:'100%'}} onClick={loadMoreFollowings}>더 보기</Button>}
                 bordered
                 dataSource={followingList}
                 renderItem={item=>(
@@ -49,7 +61,7 @@ const Profile = ()=>{
                 grid={{gutter:4,xs:2,md:3}}
                 size="small"
                 header={<div>팔로워 목록</div>}
-                loadMore={<Button style={{width:'100%'}}>더 보기</Button>}
+                loadMore={hasMoreFollower && <Button style={{width:'100%'}} onClick={loadMoreFollowers}>더 보기</Button>}
                 bordered
                 dataSource={followerList}
                 renderItem={item=>(
