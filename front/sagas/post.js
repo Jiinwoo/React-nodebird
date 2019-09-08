@@ -1,4 +1,4 @@
-import {all,fork,takeLatest,delay,put,call} from 'redux-saga/effects';
+import {all,fork,takeLatest,delay,throttle,put,call} from 'redux-saga/effects';
 import { ADD_POST_REQUEST, ADD_POST_FAILURE, ADD_POST_SUCCESS, ADD_COMMENT_SUCCESS, 
     ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, LOAD_MAIN_POSTS_REQUEST, LOAD_MAIN_POSTS_SUCCESS, 
     LOAD_MAIN_POSTS_FAILURE, LOAD_HASHTAG_POSTS_REQUEST, LOAD_HASHTAG_POSTS_SUCCESS, LOAD_HASHTAG_POSTS_FAILURE, 
@@ -95,12 +95,12 @@ function* watchAddPost(){
     yield takeLatest(ADD_POST_REQUEST,addPost);
 }
 
-function loadMainPostsAPI(){
-    return axios.get('/posts/')
+function loadMainPostsAPI(lastId = 0,limit=10){
+    return axios.get(`/posts?lastId=${lastId}&limit=${limit}`)
 }
-function* loadMainPosts(){
+function* loadMainPosts(action){
     try{
-        const result = yield call(loadMainPostsAPI);
+        const result = yield call(loadMainPostsAPI,action.lastId);
         yield put({
             type:LOAD_MAIN_POSTS_SUCCESS,
             data : result.data,
@@ -113,14 +113,14 @@ function* loadMainPosts(){
     }
 }
 function* watchLoadMainPosts(){
-    yield takeLatest(LOAD_MAIN_POSTS_REQUEST,loadMainPosts);
+    yield throttle(2000,LOAD_MAIN_POSTS_REQUEST,loadMainPosts);
 }
-function loadHashtagPostsAPI(tag){
-    return axios.get(`/hashtag/${encodeURIComponent(tag)}`)
+function loadHashtagPostsAPI(tag,lastId=0,limit=10){
+    return axios.get(`/hashtag/${encodeURIComponent(tag)}?lastId=${lastId}&limit=${limit}`)
 }
 function* loadHashtagPosts(action){
     try{
-        const result = yield call(loadHashtagPostsAPI,action.data);
+        const result = yield call(loadHashtagPostsAPI,action.data,action.lastId);
         yield put({
             type:LOAD_HASHTAG_POSTS_SUCCESS,
             data : result.data,
@@ -133,15 +133,15 @@ function* loadHashtagPosts(action){
     }
 }
 function* watchLoadHashtagPosts(){
-    yield takeLatest(LOAD_HASHTAG_POSTS_REQUEST,loadHashtagPosts);
+    yield throttle(1000,LOAD_HASHTAG_POSTS_REQUEST,loadHashtagPosts);
 }
 
-function loadUserPostsAPI(id = 0){
-    return axios.get(`/user/${id}/posts`)
+function loadUserPostsAPI(id = 0,lastId=0,limit=10){
+    return axios.get(`/user/${id}/posts?lastId=${lastId}&limit=${limit}`)
 }
 function* loadUserPosts(action){
     try{
-        const result = yield call(loadUserPostsAPI,action.data);
+        const result = yield call(loadUserPostsAPI,action.data,action.lastId);
         yield put({
             type:LOAD_USER_POSTS_SUCCESS,
             data : result.data,
@@ -154,7 +154,7 @@ function* loadUserPosts(action){
     }
 }
 function* watchLoadUserPosts(){
-    yield takeLatest(LOAD_USER_POSTS_REQUEST,loadUserPosts);
+    yield throttle(1000,LOAD_USER_POSTS_REQUEST,loadUserPosts);
 }
 //
 function uploadImagesAPI(formData){

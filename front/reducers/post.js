@@ -118,7 +118,8 @@ const reducer = (state=initialState,action)=>{
         case LOAD_MAIN_POSTS_REQUEST:{
             return {
                 ...state,
-                mainPosts:[],
+                mainPosts : action.lastId===0 ? [] : state.mainPosts,
+                hasMorePost : action.lastId ? state.hasMorePost : true,
             }
         }
         case LOAD_HASHTAG_POSTS_SUCCESS:
@@ -127,7 +128,8 @@ const reducer = (state=initialState,action)=>{
             return {
                 ...state,
                 
-                mainPosts:action.data,
+                mainPosts:state.mainPosts.concat(action.data),
+                hasMorePost : action.data.length ===10,
                 
             }
         }

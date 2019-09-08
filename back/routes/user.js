@@ -202,8 +202,18 @@ router.delete('/:id/follow',isLoggedIn,async (req,res,next)=>{
 
 router.get('/:id/posts',async (req,res,next)=>{
     try{
+        let where ={};
+        if(parseInt(req.query.lastId,10)){
+            where = {
+                id : {
+                    [db.Sequelize.Op.lt] : parseInt(req.query.lastId,10)
+                }
+                
+            }
+        }
         const posts = await db.Post.findAll({
             where : {
+                ...where,
                 UserId : parseInt(req.params.id,10) || (req.user && req.user.id) || 0,
                 RetweetId : null,
             },
@@ -218,6 +228,7 @@ router.get('/:id/posts',async (req,res,next)=>{
                 as : 'Likers',
                 attributes : ['id']
             }],
+            limit : parseInt(req.query.limit,10),
         });
         res.json(posts);
     }catch(e){
