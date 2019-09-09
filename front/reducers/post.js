@@ -59,7 +59,7 @@ export const REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
 
 
 const reducer = (state=initialState,action)=>{
-  return produce(state,(dratf)=>{
+  return produce(state,(draft)=>{
     switch(action.type){
       case ADD_POST_REQUEST:{
         draft.isAddingPost = true;
@@ -204,7 +204,7 @@ const reducer = (state=initialState,action)=>{
         case REMOVE_POST_SUCCESS: {
           const removePostIndex = draft.mainPosts.findIndex((v)=>v.id===action.data)
           draft.mainPosts.splice(removePostIndex,1);
-          
+          break;
         }
         case REMOVE_POST_FAILURE: {
           break;
