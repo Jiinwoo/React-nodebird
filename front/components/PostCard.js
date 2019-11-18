@@ -27,6 +27,7 @@ import {
   REMOVE_POST_REQUEST,
 } from '../reducers/post';
 import { UNFOLLOW_USER_REQUEST, FOLLOW_USER_REQUEST } from '../reducers/user';
+import FollowButton from './FollowButton';
 
 moment.locale('ko');
 const CardWrapper = styled.div`
@@ -144,12 +145,7 @@ const PostCard = memo(({ post }) => {
           post.RetweetId ? `${post.User.nickname}님이 리트윗 하셨습니다.` : null
         }
         extra={
-          !me || post.User.id === me.id ? null : me.Followings &&
-            me.Followings.find((v) => v.id === post.User.id) ? (
-            <Button onClick={onUnfollow(post.User.id)}>언팔로우</Button>
-          ) : (
-            <Button onClick={onFollow(post.User.id)}>팔로우</Button>
-          )
+          <FollowButton me={me} post={post} onFollow={onFollow} onUnfollow={onUnfollow}/>
         }
       >
         {post.RetweetId && post.Retweet ? (
