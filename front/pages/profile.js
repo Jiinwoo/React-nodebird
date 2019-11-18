@@ -11,6 +11,7 @@ import {
 } from '../reducers/user';
 import { LOAD_USER_POSTS_REQUEST } from '../reducers/post';
 import PostCard from '../components/PostCard';
+import FollowList from '../components/FollowList';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -55,62 +56,13 @@ const Profile = () => {
   return (
     <div>
       <NicknameEditForm />
-      <List
-        style={{ marginBottom: '20px' }}
-        grid={{ gutter: 4, xs: 2, md: 3 }}
-        size="small"
-        header={<div>팔로잉 목록</div>}
-        loadMore={
-          hasMoreFollowing && (
-            <Button style={{ width: '100%' }} onClick={loadMoreFollowings}>
-              더 보기
-            </Button>
-          )
-        }
-        bordered
-        dataSource={followingList}
-        renderItem={(item) => (
-          <List.Item style={{ marginTop: '20px' }}>
-            <Card
-              actions={[
-                <Icon key="stop" type="stop" onClick={onUnfollow(item.id)} />,
-              ]}
-            >
-              <Card.Meta description={item.nickname} />
-            </Card>
-          </List.Item>
-        )}
-      />
-      <List
-        style={{ marginBottom: '20px' }}
-        grid={{ gutter: 4, xs: 2, md: 3 }}
-        size="small"
-        header={<div>팔로워 목록</div>}
-        loadMore={
-          hasMoreFollower && (
-            <Button style={{ width: '100%' }} onClick={loadMoreFollowers}>
-              더 보기
-            </Button>
-          )
-        }
-        bordered
-        dataSource={followerList}
-        renderItem={(item) => (
-          <List.Item style={{ marginTop: '20px' }}>
-            <Card
-              actions={[
-                <Icon
-                  key="stop"
-                  type="stop"
-                  onClick={onRemoveFollower(item.id)}
-                />,
-              ]}
-            >
-              <Card.Meta description={item.nickname} />
-            </Card>
-          </List.Item>
-        )}
-      />
+      <FollowList header="팔로잉 목록" hasMore={hasMoreFollowing}
+       onClickMore={loadMoreFollowings}
+      onClickStop={onUnfollow} data={followingList}/>
+      <FollowList header="팔로워 목록" hasMore={hasMoreFollower}
+       onClickMore={loadMoreFollowers}
+      onClickStop={onRemoveFollower} data={followerList}/>
+      
       <div>
         {mainPosts.map((c) => (
           <PostCard key={+c.createdAt} post={c} />
