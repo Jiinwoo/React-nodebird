@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "BUNDLE_ANALYZE=both next build",
+    "build": "cross-env ANALYZE=true next build",
     "prestart": "npm run build",
-    "start": "NODE_ENV=production next start"
+    "start": "cross-env NODE_ENV=production next start"
   },
   "author": "JinwooJung",
   "license": "ISC",
   "dependencies": {
-    "@zeit/next-bundle-analyzer": "^0.1.2",
+    "@next/bundle-analyzer": "^9.1.3",
+    
     "antd": "^3.17.0",
     "axios": "^0.18.0",
     "compression-webpack-plugin": "^3.0.0",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
+    "cross-env": "^6.0.3",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.17.2",

@@ -28,6 +28,8 @@ class MyDocument extends Document {
         <body {...bodyAttrs}>
           <Main />
           {/*메인이 _app.js 역활*/}
+          {process.env.NODE_ENV === 'production'
+          && <script src="https://polyfill.io/v3/polyfill.min.js?features=es6,es7,es8,es9,NodeList.prototype.forEach&flags=gated" />}
           <NextScript />
           {/* next 서버구동에 필요한 스크립트  */}
         </body>
